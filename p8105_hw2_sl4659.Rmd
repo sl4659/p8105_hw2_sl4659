@@ -49,3 +49,64 @@ ppt_df$month = month.name[ppt_df$month]
 ```
 
 There are `r nrow(tw_df)` observations in the tw_df dataset and `r nrow(ppt_df)` observations in the ppt_df dataset. For the tw_df dataset, weight is a key varialbe, it indicates the amount of trash collected by the Trash Wheel. For the ppt_df dataset, total is a key variable, which indicates precipitation in a given month. These are the two variables concerned in order to verify that the amount of trash the device receives is highly dependent on rainfall. The total precipitation in 2018 is `r sum(ppt18_df$total)` in. The median number of sports balls in a dumpster in 2017 is `r median(filter(tw_df, year == 2017)$sports_balls)`.
+
+## Problem 2
+```{r problem2}
+# read data from pols-month.csv
+pols_df = 
+  read_csv("./data/fivethirtyeight_datasets/pols-month.csv", col_types = "cdddddddd") %>%
+  janitor::clean_names() %>%
+  # break up the variable mon into integer variables year, month, and day
+  separate(mon, into = c("year", "month","day"), sep = "-") %>%
+  mutate(
+    year = as.integer(year),
+    month = as.integer(month),
+    day = as.integer(day),
+    # replace month number with month name
+    month = month.name[month],
+    # reate a president variable taking values gop and dem
+    president = if_else(condition = prez_gop == 0, true = "dem", false = "gop"))
+# remove prez_gop prez_dem and day
+pols_df = select(pols_df,-prez_gop, -prez_dem, -day)
+
+# read data from snp.csv
+snp_df = 
+  read_csv("./data/fivethirtyeight_datasets/snp.csv", col_types = "cd") %>%
+  janitor::clean_names() %>%
+  separate(date, into = c("month", "day","year"), sep = "/") %>%
+  mutate(
+    year = as.integer(year),
+    month = as.integer(month),
+    day = as.integer(day)) %>%
+  arrange(year,month) %>%
+  mutate(
+    # replace month number with month name
+    month = month.name[month]
+  )
+snp_df = select(snp_df, -day)
+snp_df = snp_df[, c("year", "month", "close")]
+
+# read data from unemployment
+emp_df = 
+  read_csv("./data/fivethirtyeight_datasets/unemployment.csv", col_types = "ddddddddddddd") %>%
+  pivot_longer(
+    Jan:Dec,
+    names_to = "month",
+    values_to = "unemployment") %>%
+  mutate(
+    # match month abbreviation with month number
+    month = match(month, month.abb),
+    # replace month number with month name
+    month = month.name[month])
+names(emp_df) = c("year","month","unemployment")
+
+# join the datasets
+join1_df = left_join(pols_df, snp_df)
+result_df = left_join(join1_df, emp_df)
+```
+
+The pols_df dataset contains 822 observations of 9 variables related to the number of national politicians who are democratic or republican at any given time. The snp_df dataset contains 787 observations of 3 variables related to Standard & Poor's stock market index (S&P) at any given time. The emp_df dataset contains 816 observations of 3 variables related to percentage of unemployment at any given time. The resulting dataset, namely result_df, contains 822 observations from January 1947 to June 2015 related to information in the above three datasets with key variables president, close and unemployment.
+
+## Problem 3
+
+
