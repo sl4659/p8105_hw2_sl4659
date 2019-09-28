@@ -15,6 +15,7 @@ knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 library(readxl)
 library(tidyr)
+library(gridExtra)
 # skip row 1 before reading any data
 tw_df = read_excel("./data/HealthyHarborWaterWheelTotals2018-7-28.xlsx", sheet = 1, range = "A2:N338") %>%
 # use reasonable variable names
@@ -88,7 +89,7 @@ snp_df = snp_df[, c("year", "month", "close")]
 
 # read data from unemployment
 emp_df = 
-  read_csv("./data/fivethirtyeight_datasets/unemployment.csv", col_types = "ddddddddddddd") %>%
+  read_csv("./data/fivethirtyeight_datasets/unemployment.csv", col_types = "idddddddddddd") %>%
   pivot_longer(
     Jan:Dec,
     names_to = "month",
@@ -108,5 +109,46 @@ result_df = left_join(join1_df, emp_df)
 The pols_df dataset contains 822 observations of 9 variables related to the number of national politicians who are democratic or republican at any given time. The snp_df dataset contains 787 observations of 3 variables related to Standard & Poor's stock market index (S&P) at any given time. The emp_df dataset contains 816 observations of 3 variables related to percentage of unemployment at any given time. The resulting dataset, namely result_df, contains 822 observations from January 1947 to June 2015 related to information in the above three datasets with key variables president, close and unemployment.
 
 ## Problem 3
+```{r problem3}
+names_df = 
+  read_csv("./data/Popular_Baby_Names.csv", col_types = "icccii") %>%
+  janitor::clean_names() %>%
+  mutate(
+    # convert all child's first name to all upper cases
+    childs_first_name = toupper(childs_first_name),
+    # unify categorical indicators
+    ethnicity = replace(ethnicity, ethnicity == "ASIAN AND PACIFIC ISLANDER", "ASIAN AND PACI"),
+    ethnicity = replace(ethnicity, ethnicity == "BLACK NON HISPANIC", "BLACK NON HISP"),
+    ethnicity = replace(ethnicity, ethnicity == "WHITE NON HISPANIC", "WHITE NON HISP"),
+    ethnicity = as.factor(ethnicity),
+    gender = as.factor(gender))
+# remove duplicate rows
+names_df = distinct(names_df)
+
+# create a dataframe for olivia
+olivia_df = filter(names_df, childs_first_name == "OLIVIA", gender == "FEMALE") %>%
+  select(year_of_birth, ethnicity, rank) %>%
+  pivot_wider(
+    names_from = "ethnicity", 
+    values_from = "rank")
+grid.table(olivia_df)
+
+# create a dataframe for male children
+male_df = filter(names_df, gender == "MALE", rank == 1) %>%
+  select(year_of_birth, ethnicity, childs_first_name) %>%
+  pivot_wider(
+    names_from = "ethnicity",
+    values_from = "childs_first_name")
+grid.table(male_df)
+
+# create a dataframe for scatterplot
+wnh_df = filter(names_df, gender == "MALE", year_of_birth == 2016, ethnicity == "WHITE NON HISP") %>%
+  select(count, rank)
+ggplot(wnh_df, aes(x = rank, y = count)) + 
+  geom_point() +
+  ggtitle("Male, White Non Hispanic Children Born in 2016") +
+  xlab("rank in popularity") +
+  ylab("number of children")
+```
 
 
