@@ -17,7 +17,7 @@ library(readxl)
 library(tidyr)
 library(gridExtra)
 # skip row 1 before reading any data
-tw_df = read_excel("./data/HealthyHarborWaterWheelTotals2018-7-28.xlsx", sheet = 1, range = "A2:N338") %>%
+tw_df = read_excel("./data/Trash-Wheel-Collection-Totals-8-6-19.xlsx", sheet = 1, range = "A2:N408") %>%
 # use reasonable variable names
   janitor::clean_names() %>%
 # omit rows that do not include dumpster-specific data  
@@ -27,7 +27,7 @@ tw_df$sports_balls = round(tw_df$sports_balls, digits = 0)
 # convert the result to an integer variable
 tw_df$sports_balls = as.integer(tw_df$sports_balls)
 
-ppt18_df = read_excel("./data/HealthyHarborWaterWheelTotals2018-7-28.xlsx", sheet = 3, range = "A2:B14") %>%
+ppt18_df = read_excel("./data/Trash-Wheel-Collection-Totals-8-6-19.xlsx", sheet = 5, range = "A2:B14") %>%
   # use reasonable variable names
   janitor::clean_names() %>%
 # omit rows without precipitation data  
@@ -35,7 +35,7 @@ ppt18_df = read_excel("./data/HealthyHarborWaterWheelTotals2018-7-28.xlsx", shee
 # add a variable year
 ppt18_df$year = 2018
 
-ppt17_df = read_excel("./data/HealthyHarborWaterWheelTotals2018-7-28.xlsx", sheet = 4, range = "A2:B14") %>%
+ppt17_df = read_excel("./data/Trash-Wheel-Collection-Totals-8-6-19.xlsx", sheet = 6, range = "A2:B14") %>%
   # use reasonable variable names
   janitor::clean_names() %>%
 # omit rows without precipitation data  
@@ -49,7 +49,7 @@ ppt_df = rbind(ppt17_df, ppt18_df)
 ppt_df$month = month.name[ppt_df$month]
 ```
 
-There are `r nrow(tw_df)` observations in the tw_df dataset and `r nrow(ppt_df)` observations in the ppt_df dataset. For the tw_df dataset, weight is a key varialbe, it indicates the amount of trash collected by the Trash Wheel. For the ppt_df dataset, total is a key variable, which indicates precipitation in a given month. These are the two variables concerned in order to verify that the amount of trash the device receives is highly dependent on rainfall. The total precipitation in 2018 is `r sum(ppt18_df$total)` in. The median number of sports balls in a dumpster in 2017 is `r median(filter(tw_df, year == 2017)$sports_balls)`.
+There are `r nrow(tw_df)` observations in the tw_df dataset and `r nrow(ppt_df)` observations in the ppt_df dataset. For the tw_df dataset, weight is a key variable, it indicates the amount of trash collected by the Trash Wheel. For the ppt_df dataset, total is a key variable, which indicates precipitation in a given month. These are the two variables concerned in order to verify that the amount of trash the device receives is highly dependent on rainfall. The total precipitation in 2018 is `r sum(ppt18_df$total)` in. The median number of sports balls in a dumpster in 2017 is `r median(filter(tw_df, year == 2017)$sports_balls)`.
 
 ## Problem 2
 ```{r problem2}
