@@ -106,7 +106,7 @@ join1_df = left_join(pols_df, snp_df)
 result_df = left_join(join1_df, emp_df)
 ```
 
-The pols_df dataset contains 822 observations of 9 variables related to the number of national politicians who are democratic or republican at any given time. The snp_df dataset contains 787 observations of 3 variables related to Standard & Poor's stock market index (S&P) at any given time. The emp_df dataset contains 816 observations of 3 variables related to percentage of unemployment at any given time. The resulting dataset, namely result_df, contains 822 observations from January 1947 to June 2015 related to information in the above three datasets with key variables president, close and unemployment.
+The pols_df dataset contains `r nrow(pols_df)` observations of `r ncol(pols_df)` variables related to the number of national politicians who are democratic or republican at any given time. The snp_df dataset contains `r nrow(snp_df)` observations of `r ncol(pols_df)` variables related to Standard & Poor's stock market index (S&P) at any given time. The emp_df dataset contains `r nrow(emp_df)` observations of `r ncol(emp_df)` variables related to percentage of unemployment at any given time. The resulting dataset, namely result_df, contains `r nrow(result_df)` observations from January 1947 to June 2015 related to information in the above three datasets with key variables president, close and unemployment.
 
 ## Problem 3
 ```{r problem3p1}
